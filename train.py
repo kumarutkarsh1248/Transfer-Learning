@@ -29,18 +29,30 @@ model.avgpool = Identity()
 model.classifier = nn.Sequential(
     nn.Flatten(),
     nn.Linear(25088, 4096),
-    nn.ReLU(inplace=True),
+    nn.ReLU(),
     nn.Linear(4096, 3),
-    nn.ReLU(inplace=True),
+    nn.Softmax(inplace=True),
 )
 
-#main
-image_path =  "/content/drive/MyDrive/my projects/face detection/image/personA/frame12.jpg"
-image = cv.imread(image_path)
-image = resized_image(image, target_size=(224, 224))
-image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
-# plt.imshow(image)
-# image.shape
+
+
+
+# utility methods
+def resized_image(image, target_size=(224, 224)):
+    # Get the original image dimensions
+    original_height, original_width = image.shape[:2]
+    target_width, target_height = target_size
+
+    # Resize the image
+    image_resized = cv.resize(image, (target_width, target_height))
+    # image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB)
+
+
+    # Calculate the scale factors
+    x_scale = target_width / original_width
+    y_scale = target_height / original_height
+
+    return image_resized
 
 train_data_features_A = []
 train_data_features_B = []
@@ -209,22 +221,3 @@ for epoch in range(epochs):
 
 
 
-
-
-
-# utility methods
-def resized_image(image, target_size=(224, 224)):
-    # Get the original image dimensions
-    original_height, original_width = image.shape[:2]
-    target_width, target_height = target_size
-
-    # Resize the image
-    image_resized = cv.resize(image, (target_width, target_height))
-    # image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB)
-
-
-    # Calculate the scale factors
-    x_scale = target_width / original_width
-    y_scale = target_height / original_height
-
-    return image_resized
